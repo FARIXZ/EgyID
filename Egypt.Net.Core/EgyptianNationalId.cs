@@ -2,15 +2,21 @@ namespace Egypt.Net.Core;
 
 public sealed class EgyptianNationalId
 {
-    // ===== Public API =====
+
+    private const int CenturyIndex = 0;
+    private const int YearIndex = 1;
+    private const int MonthIndex = 3;
+    private const int DayIndex = 5;
+    private const int GovernorateIndex = 7;
+    private const int SerialIndex = 9;
+    private const int SerialLength = 3;
+
 
     public string Value { get; }
     public DateTime BirthDate { get; }
     public int GovernorateCode { get; }
     public int SerialNumber { get; }
     public Gender Gender { get; }
-
-    // ===== Constructor =====
 
     public EgyptianNationalId(string value)
     {
@@ -24,8 +30,6 @@ public sealed class EgyptianNationalId
         SerialNumber = GetSerialNumber();
         Gender = GetGender();
     }
-
-    // ===== Validation =====
 
     public static bool IsValid(string value)
     {
@@ -44,8 +48,6 @@ public sealed class EgyptianNationalId
         return true;
     }
 
-    // ===== Domain Parsing =====
-
     private DateTime GetBirthDate()
     {
         int year = GetYear();
@@ -57,7 +59,7 @@ public sealed class EgyptianNationalId
 
     private Gender GetGender()
     {
-        int serialLastDigit = int.Parse(Value.Substring(11, 1));
+        int serialLastDigit = int.Parse(Value.Substring(SerialIndex + SerialLength - 1, 1));
 
         return serialLastDigit % 2 == 0
             ? Gender.Female
@@ -66,32 +68,30 @@ public sealed class EgyptianNationalId
 
     private int GetGovernorateCode()
     {
-        return int.Parse(Value.Substring(7, 2));
+        return int.Parse(Value.Substring(GovernorateIndex, 2));
     }
 
     private int GetSerialNumber()
     {
-        return int.Parse(Value.Substring(9, 3));
+        return int.Parse(Value.Substring(SerialIndex, 3));
     }
-
-    // ===== Low-level Helpers =====
 
     private int GetYear()
     {
         int centuryBase = GetCenturyBase();
-        int yearPart = int.Parse(Value.Substring(1, 2));
+        int yearPart = int.Parse(Value.Substring(YearIndex, 2));
 
         return centuryBase + yearPart;
     }
 
     private int GetMonth()
     {
-        return int.Parse(Value.Substring(3, 2));
+        return int.Parse(Value.Substring(MonthIndex, 2));
     }
 
     private int GetDay()
     {
-        return int.Parse(Value.Substring(5, 2));
+        return int.Parse(Value.Substring(DayIndex, 2));
     }
 
     private int GetCenturyBase()
