@@ -1,5 +1,12 @@
+using Egypt.Net.Core.Exceptions;
+
 namespace Egypt.Net.Core;
 
+/// <summary>
+/// Represents an Egyptian National ID and provides
+/// functionality to extract personal information
+/// such as birth date, age, gender, and governorate.
+/// </summary>
 public sealed class EgyptianNationalId
 {
 
@@ -11,19 +18,63 @@ public sealed class EgyptianNationalId
     private const int SerialIndex = 9;
     private const int SerialLength = 3;
 
-    public bool IsAdult => Age >= 18;
-    public int Age => CalculateAge();
-    public Governorate Governorate { get; }
+    /// <summary>
+    /// Gets the original 14-digit National ID value.
+    /// </summary>
     public string Value { get; }
+
+    /// <summary>
+    /// Gets the birth date extracted from the National ID.
+    /// </summary>
     public DateTime BirthDate { get; }
+
+    /// <summary>
+    /// Gets the calculated age based on the birth date.
+    /// </summary>
+    public int Age => CalculateAge();
+
+    /// <summary>
+    /// Indicates whether the person is 18 years old or older.
+    /// </summary>
+    public bool IsAdult => Age >= 18;
+
+    /// <summary>
+    /// Gets the governorate code extracted from the National ID.
+    /// </summary>
     public int GovernorateCode { get; }
+
+    /// <summary>
+    /// Gets the governorate extracted from the National ID.
+    /// </summary>
+    public Governorate Governorate { get; }
+
+    /// <summary>
+    /// Gets the serial number part of the National ID.
+    /// </summary>
     public int SerialNumber { get; }
+
+    /// <summary>
+    /// Gets the gender extracted from the National ID.
+    /// </summary>
     public Gender Gender { get; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="EgyptianNationalId"/>.
+    /// </summary>
+    /// <param name="value">The 14-digit Egyptian National ID.</param>
+    /// <exception cref="InvalidNationalIdFormatException">
+    /// Thrown when the National ID format is invalid.
+    /// </exception>
+    /// <exception cref="InvalidBirthDateException">
+    /// Thrown when the extracted birth date is invalid.
+    /// </exception>
+    /// <exception cref="InvalidGovernorateCodeException">
+    /// Thrown when the governorate code is not recognized.
+    /// </exception>
     public EgyptianNationalId(string value)
     {
         if (!IsValid(value))
-            throw new ArgumentException("Invalid Egyptian National ID.", nameof(value));
+            throw new InvalidNationalIdException("National ID must be exactly 14 digits.");
 
         Value = value;
 
@@ -34,18 +85,31 @@ public sealed class EgyptianNationalId
         Gender = GetGender();
     }
 
+    /// <summary>
+    /// Validates the format of an Egyptian National ID.
+    /// </summary>
+    /// <param name="value">The National ID to validate.</param>
+    /// <returns>True if the format is valid.</returns>
+    /// <exception cref="InvalidNationalIdFormatException">
+    /// Thrown when the format rules are violated.
+    /// </exception>
     public static bool IsValid(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return false;
 
         if (value.Length != 14)
-            return false;
+            throw new InvalidNationalIdException(
+                 "National ID must be exactly 14 digits long."
+                );
+
 
         foreach (char c in value)
         {
             if (!char.IsDigit(c))
-                return false;
+                throw new InvalidNationalIdFormatException(
+                    "National ID must contain digits only."
+                );
         }
 
         return true;
@@ -68,12 +132,22 @@ public sealed class EgyptianNationalId
         int month = GetMonth();
         int day = GetDay();
 
-        return new DateTime(year, month, day);
+        try
+        {
+            return new DateTime(year, month, day);
+        }
+        catch
+        {
+            throw new InvalidBirthDateException(
+                "Invalid birth date extracted from National ID."
+            );
+        }
     }
 
     private Gender GetGender()
     {
-        int serialLastDigit = int.Parse(Value.Substring(SerialIndex + SerialLength - 1, 1));
+        int serialLastDigit = int.Parse(
+            Value.Substring(SerialIndex + SerialLength - 1, 1));
 
         return serialLastDigit % 2 == 0
             ? Gender.Female
@@ -90,7 +164,7 @@ public sealed class EgyptianNationalId
         int code = GetGovernorateCode();
 
         if (!Enum.IsDefined(typeof(Governorate), code))
-            throw new InvalidOperationException("Invalid governorate code in national ID.");
+            throw new InvalidGovernorateCodeException(code.ToString());
 
         return (Governorate)code;
     }
@@ -120,14 +194,15 @@ public sealed class EgyptianNationalId
 
     private int GetCenturyBase()
     {
-        char centuryDigit = Value[0];
+        char centuryDigit = Value[CenturyIndex];
 
-        if (centuryDigit == '2')
-            return 1900;
-
-        if (centuryDigit == '3')
-            return 2000;
-
-        throw new InvalidOperationException("Unsupported century digit in national ID.");
+        return centuryDigit switch
+        {
+            '2' => 1900,
+            '3' => 2000,
+            _ => throw new InvalidBirthDateException(
+                    "Unsupported century digit in National ID."
+                )
+        };
     }
 }
