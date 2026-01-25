@@ -112,6 +112,24 @@ public sealed class EgyptianNationalId
         return true;
     }
 
+    public static bool TryCreate(string value, out EgyptianNationalId? nationalId)
+    {
+        nationalId = null;
+
+        if (!IsValidFormat(value))
+            return false;
+
+        try
+        {
+            nationalId = new EgyptianNationalId(value);
+            return true;
+        }
+        catch (EgyptianNationalIdException)
+        {
+            return false;
+        }
+    }
+
     private int CalculateAge()
     {
         var today = DateTime.Today;
