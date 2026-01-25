@@ -112,6 +112,25 @@ public sealed class EgyptianNationalId
         return true;
     }
 
+    /// <summary>
+    /// Tries to create a valid <see cref="EgyptianNationalId"/> instance
+    /// without throwing exceptions.
+    /// </summary>
+    /// <param name="value">
+    /// The Egyptian National ID value to validate and parse.
+    /// </param>
+    /// <param name="nationalId">
+    /// When this method returns <c>true</c>, contains the created
+    /// <see cref="EgyptianNationalId"/> instance; otherwise, <c>null</c>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the value represents a valid Egyptian National ID;
+    /// otherwise, <c>false</c>.
+    /// </returns>
+    /// <remarks>
+    /// This method is recommended for safe validation scenarios where
+    /// exception handling is not desired.
+    /// </remarks>
     public static bool TryCreate(string value, out EgyptianNationalId? nationalId)
     {
         nationalId = null;
