@@ -125,4 +125,43 @@ public class EgyptianNationalIdTests
         Assert.Null(nationalId);
     }
 
+    [Fact]
+    public void BirthDateComponents_ShouldMatch_BirthDate()
+    {
+        var id = new EgyptianNationalId("30101011234567");
+
+        Assert.Equal(2001, id.BirthYear);
+        Assert.Equal(1, id.BirthMonth);
+        Assert.Equal(1, id.BirthDay);
+    }
+
+    [Fact]
+    public void IsValid_ShouldReturnTrue_WhenNationalIdIsValid()
+    {
+        var value = "30101011234567";
+
+        var result = EgyptianNationalId.IsValid(value);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void IsValid_ShouldReturnFalse_WhenFormatIsInvalid()
+    {
+        var value = "123";
+
+        var result = EgyptianNationalId.IsValid(value);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void IsValid_ShouldReturnFalse_WhenDomainValidationFails()
+    {
+        var value = "30101019999999"; // invalid governorate
+
+        var result = EgyptianNationalId.IsValid(value);
+
+        Assert.False(result);
+    }
 }

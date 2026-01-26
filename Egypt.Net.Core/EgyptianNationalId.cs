@@ -32,6 +32,21 @@ public sealed class EgyptianNationalId
     public DateTime BirthDate { get; }
 
     /// <summary>
+    /// Gets the birth year extracted from the National ID.
+    /// </summary>
+    public int BirthYear => BirthDate.Year;
+
+    /// <summary>
+    /// Gets the birth month extracted from the National ID.
+    /// </summary>
+    public int BirthMonth => BirthDate.Month;
+
+    /// <summary>
+    /// Gets the birth day extracted from the National ID.
+    /// </summary>
+    public int BirthDay => BirthDate.Day;
+
+    /// <summary>
     /// Gets the calculated age based on the birth date.
     /// </summary>
     public int Age => CalculateAge();
@@ -110,6 +125,19 @@ public sealed class EgyptianNationalId
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Determines whether the provided value represents
+    /// a valid Egyptian National ID (format and domain rules).
+    /// </summary>
+    /// <param name="value">The National ID value to validate.</param>
+    /// <returns>
+    /// True if the value is a valid Egyptian National ID; otherwise, false.
+    /// </returns>
+    public static bool IsValid(string value)
+    {
+        return TryCreate(value, out _);
     }
 
     /// <summary>
