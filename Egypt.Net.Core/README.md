@@ -2,404 +2,406 @@
 
 Core domain utilities for working with Egyptian national data in .NET.
 
-This library provides clean, immutable, and well-tested domain models
-for common Egyptian data concepts, starting with the **Egyptian National ID**.
+This library provides clean, immutable, and well-tested domain models for common Egyptian data concepts, starting with the **Egyptian National ID**.
 
 ---
 
-## Why this library exists
+## 🎯 Why This Library Exists
 
-Most .NET examples focus on global or Western data models.
-Egyptian developers often reimplement the same logic
-(such as parsing the national ID) in ad-hoc and error-prone ways.
-
-This library exists to:
-- Provide a clean and reusable core domain model
-- Encourage correct validation and domain boundaries
-- Serve as an educational reference for beginners
-- Grow gradually through real Egyptian use cases
+Egyptian developers often reimplement National ID validation logic in ad-hoc and error-prone ways. This library provides:
+- ✅ Clean, reusable domain model
+- ✅ Correct validation and domain boundaries
+- ✅ Educational reference for beginners
+- ✅ Production-ready code
 
 ---
 
-## Features
-
-### Core Features
-- ✅ Parse and validate Egyptian National ID
-- ✅ Extract birth date, age, gender, and governorate
-- ✅ Calculate age and adulthood status
-- ✅ Clean and immutable domain model
-- ✅ Domain-specific exception hierarchy
-- ✅ Safe creation via `TryCreate`
-- ✅ Quick validation via `IsValid`
-- ✅ No external dependencies
-- ✅ Fully unit tested (70+ tests)
-
-### New Features 🆕
-- ✅ **Checksum Validation**: Validates the 14th digit using weighted algorithm
-- ✅ **IEquatable & IComparable**: Full equality and comparison support
-- ✅ **Formatting Options**: Multiple formatting styles (dashes, spaces, masked, detailed)
-- ✅ **Arabic Support**: Governorate and gender names in Arabic
-- ✅ **String Extensions**: Fluent API for validation and parsing
-- ✅ **Enhanced Properties**: `GovernorateNameAr`, `GovernorateNameEn`, `GenderAr`
-
----
-## ⚠️ Checksum Validation
-
-### Default Behavior
-
-By default, the library **does NOT validate** the 14th checksum digit.
-```csharp
-// Default - no checksum validation
-var id = new EgyptianNationalId("30101010123458");  // ✅ Accepted
-```
-
-### Why is checksum disabled by default?
-
-1. **Not publicly documented** - The official algorithm is not available
-2. **Prevents false rejections** - Real National IDs won't be rejected
-3. **Security** - Prevents misuse for generating fake IDs
-4. **Flexibility** - You can enable it if you have the verified algorithm
-
-### How to enable checksum validation?
-
-If you have the official checksum algorithm:
-```csharp
-// Enable checksum validation
-var id = new EgyptianNationalId("30101010123458", validateChecksum: true);
-
-// Or with IsValid
-bool isValid = EgyptianNationalId.IsValid("30101010123458", validateChecksum: true);
-
-// Or with string extensions
-bool isValid = "30101010123458".IsValidEgyptianNationalId(validateChecksum: true);
-```
-
-### What IS validated by default?
-
-Even without checksum validation, the library validates:
-
-✅ **Format** - Exactly 14 digits
-✅ **Birth date** - Valid calendar date
-✅ **Governorate** - Valid governorate code (01-88)
-✅ **Century** - Valid century digit (2 or 3)
-✅ **Domain rules** - All structural rules
-
-This is **sufficient for most production use cases**.
-
-### For developers with the official algorithm
-
-If you have access to the verified checksum algorithm:
-
-1. Update the `ValidateChecksum` method in `EgyptianNationalId.cs`
-2. Set `validateChecksum: true` when creating instances
-3. Consider contributing it back (with proper authorization)
-```csharp
-// In your fork/custom build
-public static bool ValidateChecksum(string value)
-{
-    // Your verified algorithm here
-    // ...
-}
-
-// Then use it
-var id = new EgyptianNationalId(userInput, validateChecksum: true);
-```
-
-## Installation
-
-Available on NuGet:
+## 📦 Installation
 
 ```bash
 dotnet add package Egypt.Net.Core
 ```
-**Note:** v1.0.1+ has checksum validation disabled by default for better compatibility with real National IDs.
 
-## Basic Usage  (No Checksum Validation)
+**Latest Version:** v1.0.1+ (checksum validation disabled by default)
 
-```csharp
-using Egypt.Net.Core;
+---
 
-var nationalId = new EgyptianNationalId("30101011234565");
-
-Console.WriteLine(nationalId.BirthDate);         // 2001-01-01
-Console.WriteLine(nationalId.Gender);            // Male
-Console.WriteLine(nationalId.Governorate);       // Cairo
-Console.WriteLine(nationalId.GovernorateNameAr); // القاهرة
-Console.WriteLine(nationalId.GenderAr);          // ذكر
-Console.WriteLine(nationalId.IsAdult);           // true
-Console.WriteLine(nationalId.Age);               // calculated age
-```
-
-## Safe Creation (Recommended)
+## ⚡ Quick Start
 
 ```csharp
 using Egypt.Net.Core;
 
-if (EgyptianNationalId.TryCreate("30101011234565", out var nationalId))
+var id = new EgyptianNationalId("30101010123458");
+
+Console.WriteLine(id.BirthDate);           // 2001-01-01
+Console.WriteLine(id.Age);                 // 24
+Console.WriteLine(id.Gender);              // Male
+Console.WriteLine(id.GovernorateNameAr);   // القاهرة
+Console.WriteLine(id.IsAdult);             // true
+```
+
+---
+
+## ✨ Features
+
+### 🔍 Validation & Parsing
+- Parse and validate Egyptian National IDs
+- Safe creation with `TryCreate()` (no exceptions)
+- Quick validation with `IsValid()`
+- Optional checksum validation
+
+### 📊 Data Extraction
+- Birth date, age, gender
+- Governorate (27 governorates)
+- Geographic region classification
+- Issue date & expiry estimation
+- Serial number
+
+### 🌍 Arabic Support
+- Full bilingual support (Arabic & English)
+- All 27 governorates in Arabic
+- Gender in Arabic (ذكر/أنثى)
+
+### 🎨 Formatting
+- 5 formatting styles: dashes, spaces, brackets, masked, detailed
+- Privacy protection with masked format
+
+### 🔧 Developer Experience
+- String extension methods for fluent API
+- IEquatable & IComparable support
+- LINQ-friendly
+- Zero dependencies
+- 100+ unit tests
+
+---
+
+## 📚 Documentation
+
+### Basic Usage
+
+```csharp
+// Simple creation
+var id = new EgyptianNationalId("30101010123458");
+
+// Safe creation (recommended)
+if (EgyptianNationalId.TryCreate("30101010123458", out var nationalId))
 {
-    Console.WriteLine($"{nationalId!.GovernorateNameAr} - {nationalId.GenderAr}");
-}
-else
-{
-    Console.WriteLine("Invalid National ID");
-}
-```
-
-## Checksum Validation 🆕
-
-```csharp
-// Validate with checksum (default)
-var isValid = EgyptianNationalId.IsValid("30101011234565"); // true/false
-
-// Create with checksum validation
-var id = new EgyptianNationalId("30101011234565"); // throws if checksum invalid
-
-// Skip checksum validation (for testing or legacy data)
-var idNoChecksum = new EgyptianNationalId("30101011234565", validateChecksum: false);
-
-// Validate checksum only
-bool hasValidChecksum = EgyptianNationalId.ValidateChecksum("30101011234565");
-```
-
-## Formatting Options 🆕
-
-```csharp
-var id = new EgyptianNationalId("30101011234565");
-
-// Format with dashes: 3-010101-01-23456
-Console.WriteLine(id.FormatWithDashes());
-
-// Format with spaces: 3 010101 01 23456
-Console.WriteLine(id.FormatWithSpaces());
-
-// Format with brackets: [3][010101][01][23456]
-Console.WriteLine(id.FormatWithBrackets());
-
-// Masked format: 301********65
-Console.WriteLine(id.FormatMasked());
-
-// Detailed format with all info
-Console.WriteLine(id.FormatDetailed());
-/*
-Century: 3 (2000s)
-Birth Date: 01/01/2001
-Governorate: 01 (Cairo)
-Serial: 2345
-Gender: Male
-*/
-```
-
-## Arabic Support 🆕
-
-```csharp
-var id = new EgyptianNationalId("30101011234565");
-
-// Arabic governorate name
-Console.WriteLine(id.GovernorateNameAr); // القاهرة
-
-// English governorate name
-Console.WriteLine(id.GovernorateNameEn); // Cairo
-
-// Arabic gender
-Console.WriteLine(id.GenderAr); // ذكر or أنثى
-
-// Using extension methods on Governorate enum
-var gov = Governorate.Cairo;
-Console.WriteLine(gov.GetArabicName());    // القاهرة
-Console.WriteLine(gov.GetEnglishName());   // Cairo
-
-var (arabic, english) = gov.GetBothNames();
-Console.WriteLine($"{arabic} ({english})"); // القاهرة (Cairo)
-```
-
-## String Extension Methods 🆕
-
-```csharp
-using Egypt.Net.Core;
-
-string idString = "30101011234565";
-
-// Quick validation
-bool isValid = idString.IsValidEgyptianNationalId();
-
-// Convert to NationalId
-var nationalId = idString.ToEgyptianNationalId();
-if (nationalId != null)
-{
-    Console.WriteLine(nationalId.GovernorateNameAr);
+    Console.WriteLine($"{nationalId!.GovernorateNameAr} - {nationalId.Age} سنة");
 }
 
-// Try parse pattern
-if (idString.TryParseAsNationalId(out var id))
+// String extensions
+if ("30101010123458".IsValidEgyptianNationalId())
 {
-    Console.WriteLine($"Age: {id!.Age}");
+    var id = "30101010123458".ToEgyptianNationalId();
 }
-
-// Format validation only
-bool hasValidFormat = idString.HasValidNationalIdFormat();
-
-// Checksum validation only
-bool hasValidChecksum = idString.HasValidNationalIdChecksum();
 ```
 
-## Equality and Comparison 🆕
+---
 
-```csharp
-var id1 = new EgyptianNationalId("30101011234565");
-var id2 = new EgyptianNationalId("30101011234565");
-var id3 = new EgyptianNationalId("29001010123452");
+### All Available Properties
 
-// Equality
-Console.WriteLine(id1 == id2);  // true
-Console.WriteLine(id1 == id3);  // false
-
-// Comparison (by birth date)
-Console.WriteLine(id3 < id1);   // true (1990 < 2001)
-
-// Can be used in collections
-var hashSet = new HashSet<EgyptianNationalId> { id1, id2, id3 };
-Console.WriteLine(hashSet.Count); // 2 (id1 and id2 are equal)
-
-// Can be sorted
-var list = new List<EgyptianNationalId> { id1, id3 };
-list.Sort(); // Sorted by birth date (oldest first)
-```
-
-## 🗺️ Geographic Region Classification 🆕
-
-Extract the geographic region where a person was born:
 ```csharp
 var id = new EgyptianNationalId("30101010123458");
 
-// Region information
-Console.WriteLine(id.BirthRegion);         // GreaterCairo
-Console.WriteLine(id.BirthRegionNameAr);   // القاهرة الكبرى
-Console.WriteLine(id.BirthRegionNameEn);   // GreaterCairo
+// 📅 Date & Age
+id.BirthDate              // 2001-01-01
+id.BirthYear              // 2001
+id.BirthMonth             // 1
+id.BirthDay               // 1
+id.Age                    // 24
+id.IsAdult                // true (>= 18)
 
-// Boolean helpers
-Console.WriteLine(id.IsFromUpperEgypt);    // false
-Console.WriteLine(id.IsFromLowerEgypt);    // true (Greater Cairo)
-Console.WriteLine(id.IsFromGreaterCairo);  // true
-Console.WriteLine(id.IsFromDelta);         // false
-Console.WriteLine(id.IsFromSinai);         // false
-Console.WriteLine(id.IsFromCoastalRegion); // false
-Console.WriteLine(id.IsBornAbroad);        // false
+// 📍 Location
+id.Governorate            // Cairo (enum)
+id.GovernorateCode        // 01
+id.GovernorateNameAr      // القاهرة
+id.GovernorateNameEn      // Cairo
+id.BirthRegion            // GreaterCairo (enum)
+id.BirthRegionNameAr      // القاهرة الكبرى
+id.IsFromUpperEgypt       // false
+id.IsFromLowerEgypt       // true
+
+// 👤 Personal
+id.Gender                 // Male (enum)
+id.GenderAr               // ذكر
+id.SerialNumber           // 2345
+
+// 🎫 Card Info
+id.EstimatedIssueDate     // 2017-01-01 (birth + 16 years)
+id.YearsSinceIssue        // 9 years
+id.EstimatedExpiryDate    // 2024-01-01
+id.IsLikelyExpired        // true
+id.YearsUntilExpiry       // -2 (expired 2 years ago)
+id.IsExpiringSoon         // false
+
+// 📄 Raw
+id.Value                  // "30101010123458"
 ```
 
-### Regions of Egypt
+---
 
-Egypt is divided into 7 geographic regions:
+### Formatting Options
 
-1. **Greater Cairo** (القاهرة الكبرى) - Cairo, Giza, Qalyubia
-2. **Delta** (الدلتا) - Alexandria, Dakahlia, Sharqia, and 5 more
-3. **Canal** (قناة السويس) - Port Said, Suez, Ismailia
-4. **Upper Egypt** (الصعيد) - Beni Suef, Asyut, Luxor, and 5 more
-5. **Sinai & Red Sea** (سيناء والبحر الأحمر) - North Sinai, South Sinai, Red Sea
-6. **Western Desert** (الصحراء الغربية) - New Valley, Matrouh
-7. **Foreign** (خارج الجمهورية) - Births abroad
-
-### Use Cases
 ```csharp
-// Demographic analysis
-var egyptians = GetNationalIds();
-var fromUpperEgypt = egyptians.Count(id => id.IsFromUpperEgypt);
-var fromDelta = egyptians.Count(id => id.IsFromDelta);
+var id = new EgyptianNationalId("30101010123458");
 
-// Regional targeting
-if (user.NationalId.IsFromCoastalRegion)
-{
-    ShowBeachRelatedOffers();
-}
-
-// Statistics
-var byRegion = employees
-    .GroupBy(e => e.NationalId.BirthRegion)
-    .OrderByDescending(g => g.Count());
+id.FormatWithDashes()     // 3-010101-01-23458
+id.FormatWithSpaces()     // 3 010101 01 23458
+id.FormatWithBrackets()   // [3][010101][01][23458]
+id.FormatMasked()         // 301********58 (privacy!)
+id.FormatDetailed()       // Multi-line format with all info
 ```
 
-## Exception Handling
+---
 
-The library provides a clear exception hierarchy:
+### Geographic Regions
+
+Egypt is divided into 7 regions:
+
+```csharp
+id.BirthRegion            // GreaterCairo, Delta, UpperEgypt, etc.
+id.BirthRegionNameAr      // القاهرة الكبرى
+id.IsFromUpperEgypt       // false
+id.IsFromLowerEgypt       // true
+id.IsFromGreaterCairo     // true
+id.IsFromDelta            // false
+id.IsFromCoastalRegion    // false
+id.IsBornAbroad           // false (Governorate.Foreign)
+```
+
+**Regions:**
+1. **Greater Cairo** (القاهرة الكبرى) - Cairo, Giza, Qalyubia
+2. **Delta** (الدلتا) - Alexandria, Dakahlia, Sharqia, etc.
+3. **Canal** (قناة السويس) - Port Said, Suez, Ismailia
+4. **Upper Egypt** (الصعيد) - Beni Suef, Asyut, Luxor, etc.
+5. **Sinai & Red Sea** (سيناء والبحر الأحمر)
+6. **Western Desert** (الصحراء الغربية) - Matrouh, New Valley
+7. **Foreign** (خارج الجمهورية)
+
+---
+
+### Issue Date & Expiry
+
+Egyptian IDs are issued at age 16 with 7-year validity (5 years before 2021).
+
+```csharp
+var id = new EgyptianNationalId("30101010123458");
+
+// Issue estimation
+id.EstimatedIssueDate      // 2017-01-01 (birth + 16 years)
+id.YearsSinceIssue         // 9 years
+id.CardAge                 // 9 years
+
+// Expiry estimation
+id.EstimatedExpiryDate     // 2024-01-01 (issue + 7 years)
+id.IsLikelyExpired         // true
+id.YearsUntilExpiry        // -2 (expired)
+id.IsExpiringSoon          // false (already expired)
+
+// Eligibility
+id.IsEligibleForNationalId // true (age >= 16)
+```
+
+**Use Cases:**
+```csharp
+// Renewal reminders
+if (user.NationalId.IsExpiringSoon)
+    SendRenewalReminder();
+
+// Expired verification
+if (user.NationalId.IsLikelyExpired)
+    ShowExpiryWarning();
+```
+
+---
+
+### Checksum Validation
+
+⚠️ **Disabled by default** - The official algorithm is not publicly documented.
+
+```csharp
+// Default - no checksum
+var id = new EgyptianNationalId("30101010123458");  // ✅
+
+// Enable checksum (if you have the verified algorithm)
+var id = new EgyptianNationalId("30101010123458", validateChecksum: true);
+
+// Check only
+bool hasValidChecksum = EgyptianNationalId.ValidateChecksum("30101010123458");
+```
+
+**What IS validated by default:**
+✅ Format (14 digits)  
+✅ Birth date validity  
+✅ Governorate code (01-88)  
+✅ Century digit (2 or 3)  
+✅ All structural rules
+
+---
+
+### String Extensions
+
+```csharp
+string input = "30101010123458";
+
+// Validation
+input.IsValidEgyptianNationalId()     // true/false
+input.HasValidNationalIdFormat()      // format only
+input.HasValidNationalIdChecksum()    // checksum only
+
+// Parsing
+var id = input.ToEgyptianNationalId();
+if (input.TryParseAsNationalId(out var nationalId))
+{
+    // Use nationalId
+}
+```
+
+---
+
+### Collections & LINQ
+
+```csharp
+var id1 = new EgyptianNationalId("30101010123458");
+var id2 = new EgyptianNationalId("30101010123458");
+var id3 = new EgyptianNationalId("29001010123452");
+
+// Equality
+id1 == id2                // true
+id1.Equals(id2)           // true
+
+// Comparison (by birth date)
+id3 < id1                 // true (1990 < 2001)
+
+// Collections
+var unique = new HashSet<EgyptianNationalId> { id1, id2, id3 };
+// Count = 2 (id1 and id2 are equal)
+
+// LINQ
+var adults = ids.Where(id => id.IsAdult);
+var fromCairo = ids.Where(id => id.Governorate == Governorate.Cairo);
+var expiredIds = ids.Where(id => id.IsLikelyExpired);
+```
+
+---
+
+### Exception Handling
 
 ```csharp
 try
 {
     var id = new EgyptianNationalId("invalid");
 }
-catch (InvalidNationalIdFormatException ex)
+catch (InvalidNationalIdFormatException)
 {
-    // Handle format errors (not 14 digits, contains non-digits)
+    // Format error: not 14 digits, contains letters, etc.
 }
-catch (InvalidChecksumException ex)
+catch (InvalidBirthDateException)
 {
-    // Handle checksum validation errors
+    // Invalid date: Feb 30, etc.
 }
-catch (InvalidBirthDateException ex)
+catch (InvalidGovernorateCodeException)
 {
-    // Handle invalid dates (e.g., Feb 30)
+    // Unknown governorate code
 }
-catch (InvalidGovernorateCodeException ex)
+catch (InvalidChecksumException)
 {
-    // Handle unrecognized governorate codes
+    // Checksum validation failed (if enabled)
 }
-catch (EgyptianNationalIdException ex)
+catch (EgyptianNationalIdException)
 {
-    // Handle any National ID related error
+    // Base exception - catches all
 }
 ```
-
-## All Available Properties
-
-```csharp
-var id = new EgyptianNationalId("30101011234565");
-
-// Basic properties
-string value = id.Value;                    // "30101011234565"
-DateTime birthDate = id.BirthDate;          // 2001-01-01
-int birthYear = id.BirthYear;               // 2001
-int birthMonth = id.BirthMonth;             // 1
-int birthDay = id.BirthDay;                 // 1
-
-// Age properties
-int age = id.Age;                           // calculated
-bool isAdult = id.IsAdult;                  // true if >= 18
-
-// Governorate properties
-int governorateCode = id.GovernorateCode;   // 1
-Governorate governorate = id.Governorate;   // Cairo
-string governorateAr = id.GovernorateNameAr;// القاهرة
-string governorateEn = id.GovernorateNameEn;// Cairo
-
-// Gender properties
-Gender gender = id.Gender;                  // Male/Female
-string genderAr = id.GenderAr;             // ذكر/أنثى
-
-// Serial number
-int serialNumber = id.SerialNumber;         // 2345
-```
-
-## Versioning
-
-This library follows semantic versioning:
-
-- `0.x.x` → Public API may change
-- `1.0.0` → Stable API
-
-## Project Status
-
-This project is under active development.
-New features will be added gradually with a strong focus on correctness and clarity.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines.
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 
-Made with ❤️ for Egyptian developers
+## 🎯 Use Cases
+
+### Age Verification System
+```csharp
+var id = userInput.ToEgyptianNationalId();
+if (id == null)
+    return "Invalid National ID";
+
+if (!id.IsAdult)
+    return $"Must be 18+. Your age: {id.Age}";
+
+return "Access granted";
+```
+
+### Regional Analytics
+```csharp
+var employees = GetEmployees();
+var byRegion = employees
+    .GroupBy(e => e.NationalId.BirthRegion)
+    .OrderByDescending(g => g.Count());
+
+foreach (var group in byRegion)
+{
+    Console.WriteLine($"{group.Key.GetArabicName()}: {group.Count()} employees");
+}
+```
+
+### Privacy-Protected Logging
+```csharp
+// ❌ Bad - privacy violation
+logger.Log($"User {id.Value} logged in");
+
+// ✅ Good - masked format
+logger.Log($"User {id.FormatMasked()} logged in");
+// Output: User 301********58 logged in
+```
+
+---
+
+## 📊 Testing
+
+- **100+ Unit Tests** with comprehensive coverage
+- All edge cases tested (leap years, boundaries, etc.)
+- 100% pass rate
+- Production-ready quality
+
+```bash
+dotnet test
+```
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Completed
+- National ID validation & parsing
+- Checksum validation (optional)
+- Geographic region classification
+- Issue date & expiry estimation
+- Arabic language support
+- Formatting options
+- Equality & comparison
+
+### 🔜 Coming Soon
+- Generation classification (Gen Z, Millennials, etc.)
+- Age group classification
+- Zodiac signs
+- Advanced validation rules
+- ASP.NET Core integration
+- JSON serialization
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
+
+MIT License - Made with ❤️ for Egyptian developers
+
+---
+
+## 🔗 Links
+
+- 📦 [NuGet Package](https://www.nuget.org/packages/Egypt.Net.Core/)
+- 💻 [GitHub Repository](https://github.com/abdulrhmanhossam/Egypt-Net-Core)
