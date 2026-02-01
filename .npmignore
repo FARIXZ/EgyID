@@ -1,0 +1,9 @@
+src/
+tsconfig.json
+.vscode/
+.git/
+.gitignore
+Egypt.Net.Core/
+Egypt.Net.Core.Tests/
+*.slnx
+CONTRIBUTING.md

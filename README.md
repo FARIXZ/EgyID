@@ -1,7 +1,9 @@
-# Egypt.NET 🇪🇬
+# EgyID 🇪🇬
 
-An open-source .NET project focused on building clean, well-designed
-domain libraries for **Egyptian-specific data and real-world use cases**.
+An open-source project focused on building clean, well-designed
+libraries for **Egyptian-specific data and real-world use cases**.
+
+Available for both **.NET** and **Node.js/TypeScript**.
 
 The project aims to provide production-aware, beginner-friendly
 domain models instead of ad-hoc or copy-paste implementations.
@@ -10,9 +12,9 @@ domain models instead of ad-hoc or copy-paste implementations.
 
 ## 🎯 Project Goals
 
-Egypt.NET exists to:
+EgyID exists to:
 
-- Provide **Egypt-focused .NET libraries**
+- Provide **Egypt-focused libraries** for multiple platforms
 - Encourage **clean domain modeling**
 - Help **beginners learn real open-source practices**
 - Avoid fragile, duplicated implementations
@@ -20,37 +22,54 @@ Egypt.NET exists to:
 
 ---
 
-## 📦 Current Modules
+## 📦 Available Libraries
 
-### Egypt.Net.Core
+### .NET - Egypt.Net.Core
 
-Core domain utilities for working with Egyptian national data.
+Core domain utilities for working with Egyptian national data in .NET.
 
-Current features include:
+📖 Module documentation: [`Egypt.Net.Core/README.md`](./Egypt.Net.Core/README.md)
+
+📦 NuGet:
+
+```bash
+dotnet add package Egypt.Net.Core
+```
+
+### Node.js / TypeScript - egyid
+
+Full-featured Node.js/TypeScript library with identical functionality.
+
+📦 npm:
+
+```bash
+npm install egyid
+```
+
+---
+
+## ✨ Features (Both Platforms)
+
 - ✅ Egyptian National ID parsing and validation
 - ✅ Checksum validation for data integrity
 - ✅ Birth date extraction and age calculation
 - ✅ Gender detection (with Arabic support)
 - ✅ Governorate resolution (bilingual: Arabic & English)
+- ✅ Region classification (Greater Cairo, Delta, Upper Egypt, etc.)
 - ✅ Multiple formatting options (dashes, spaces, masked, detailed)
-- ✅ IEquatable & IComparable implementation
-- ✅ String extension methods for fluent API
-- ✅ Safe creation without exceptions
-- ✅ Domain-specific exception hierarchy
-- ✅ Fully unit tested (70+ tests)
+- ✅ ID card validity estimation (issue date, expiry)
+- ✅ Equality and comparison support
+- ✅ Safe creation without exceptions (TryCreate pattern)
+- ✅ Domain-specific exception/error hierarchy
+- ✅ Fully unit tested
 - ✅ No external dependencies
-
-📖 Module documentation:
-👉 [`Egypt.Net.Core/README.md`](./Egypt.Net.Core/README.md)
-
-📦 NuGet:
-```bash
-dotnet add package Egypt.Net.Core
-```
+- ✅ Full TypeScript support (Node.js)
 
 ---
 
-## 🚀 Quick Example
+## 🚀 Quick Examples
+
+### .NET
 
 ```csharp
 using Egypt.Net.Core;
@@ -71,6 +90,26 @@ if ("30101011234565".IsValidEgyptianNationalId())
 }
 ```
 
+### Node.js / TypeScript
+
+```typescript
+import { EgyptianNationalId, isValidEgyptianNationalId } from 'egyid';
+
+const id = new EgyptianNationalId('30101011234565');
+
+console.log(id.birthDate); // 2001-01-01
+console.log(id.governorateNameAr); // القاهرة
+console.log(id.genderAr); // ذكر
+console.log(id.age); // 24
+console.log(id.formatWithDashes()); // 3-010101-01-23456
+
+// Helper functions
+if (isValidEgyptianNationalId('30101011234565')) {
+  const nationalId = EgyptianNationalId.tryCreate('30101011234565');
+  console.log(`${nationalId?.governorateNameAr} - ${nationalId?.age} سنة`);
+}
+```
+
 ---
 
 ## 🧠 Philosophy
@@ -82,55 +121,31 @@ if ("30101011234565".IsValidEgyptianNationalId())
 - Beginner-friendly but production-aware
 - Bilingual support (Arabic & English)
 - Clean, immutable objects
+- Identical behavior across platforms
 
 ---
 
 ## 🧪 Testing
 
-Each module includes:
-- Dedicated test project
+Each library includes:
+
+- Dedicated test suite
 - Clear and readable unit tests
 - Realistic test cases that reflect real usage
-- 70+ comprehensive tests
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome, especially from beginners.
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-Recommended flow:
-- Fork the repository
-- Create a feature branch
-- Write or update tests
-- Submit a pull request with a clear description
-
----
-
-## 🗺 Roadmap
-
-### Completed ✅
-- Egyptian National ID validation and parsing
-- Checksum validation
-- Arabic language support
-- Multiple formatting options
-- Equality and comparison support
-- String extension methods
-
-### Upcoming 🔜
-- JSON serialization support
-- ASP.NET Core model binding
-- FluentValidation integration
-- More Egyptian domain models (phone numbers, postal codes, etc.)
-- Performance optimizations with Span<T>
+- Comprehensive edge case coverage
 
 ---
 
 ## 📄 License
 
 This project is licensed under the MIT License.
+
+---
+
+## 🙏🏻 Credits
+
+Made by [Abdulrhman Hossam](https://github.com/abdulrhmanhossam/)
+and Ported to **Node.js/TypeScript** by [FARIXZ](https://github.com/farixz/)
 
 ---
 
