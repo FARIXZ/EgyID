@@ -1,6 +1,6 @@
 {
   "name": "egyid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Egyptian National ID parsing, validation, and information extraction library",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
