@@ -22,23 +22,7 @@ EgyID exists to:
 
 ---
 
-## 📦 Available Libraries
-
-### .NET - Egypt.Net.Core
-
-Core domain utilities for working with Egyptian national data in .NET.
-
-📖 Module documentation: [`Egypt.Net.Core/README.md`](./Egypt.Net.Core/README.md)
-
-📦 NuGet:
-
-```bash
-dotnet add package Egypt.Net.Core
-```
-
-### Node.js / TypeScript - egyid
-
-Full-featured Node.js/TypeScript library with identical functionality.
+## 📦 Installation
 
 📦 npm:
 
@@ -58,37 +42,12 @@ npm install egyid
 - ✅ Region classification (Greater Cairo, Delta, Upper Egypt, etc.)
 - ✅ Multiple formatting options (dashes, spaces, masked, detailed)
 - ✅ ID card validity estimation (issue date, expiry)
-- ✅ Equality and comparison support
-- ✅ Safe creation without exceptions (TryCreate pattern)
-- ✅ Domain-specific exception/error hierarchy
-- ✅ Fully unit tested
 - ✅ No external dependencies
 - ✅ Full TypeScript support (Node.js)
 
 ---
 
-## 🚀 Quick Examples
-
-### .NET
-
-```csharp
-using Egypt.Net.Core;
-
-var id = new EgyptianNationalId("30101011234565");
-
-Console.WriteLine(id.BirthDate);         // 2001-01-01
-Console.WriteLine(id.GovernorateNameAr); // القاهرة
-Console.WriteLine(id.GenderAr);          // ذكر
-Console.WriteLine(id.Age);               // 24
-Console.WriteLine(id.FormatWithDashes()); // 3-010101-01-23456
-
-// String extensions
-if ("30101011234565".IsValidEgyptianNationalId())
-{
-    var nationalId = "30101011234565".ToEgyptianNationalId();
-    Console.WriteLine($"{nationalId?.GovernorateNameAr} - {nationalId?.Age} سنة");
-}
-```
+## 🚀 Quick Example
 
 ### Node.js / TypeScript
 
@@ -117,7 +76,6 @@ if (isValidEgyptianNationalId('30101011234565')) {
 - Domain first
 - Explicit validation
 - Fail fast or fail safely
-- No magic
 - Beginner-friendly but production-aware
 - Bilingual support (Arabic & English)
 - Clean, immutable objects

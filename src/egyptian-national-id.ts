@@ -15,7 +15,6 @@ import {
   InvalidNationalIdFormatError,
   InvalidChecksumError,
   InvalidBirthDateError,
-  InvalidGovernorateCodeError,
 } from './errors.js';
 
 // Constants
@@ -495,11 +494,11 @@ export class EgyptianNationalId {
   private parseGovernorate(): Governorate {
     const code = this.governorateCode;
 
-    if (!ValidGovernorateCodes.has(code)) {
-      throw new InvalidGovernorateCodeError(code.toString());
+    if (ValidGovernorateCodes.has(code)) {
+      return code as Governorate;
     }
 
-    return code as Governorate;
+    return Governorate.Unknown;
   }
 
   private parseSerialNumber(): number {

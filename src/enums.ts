@@ -38,6 +38,12 @@ export enum Governorate {
   NorthSinai = 34,
   SouthSinai = 35,
   Foreign = 88,
+  /**
+   * Sentinel for governorate codes that are missing from the official
+   * numbering scheme (e.g. 05-10, 20). These codes are not assigned to any
+   * governorate and should NOT be treated as invalid IDs.
+   */
+  Unknown = 0,
 }
 
 /**
@@ -51,6 +57,7 @@ export enum Region {
   SinaiAndRedSea = 5,
   WesternDesert = 6,
   Foreign = 7,
+  Unknown = 8,
 }
 
 /**
@@ -85,6 +92,7 @@ export const GovernorateArabicNames: Record<Governorate, string> = {
   [Governorate.NorthSinai]: 'شمال سيناء',
   [Governorate.SouthSinai]: 'جنوب سيناء',
   [Governorate.Foreign]: 'خارج الجمهورية',
+  [Governorate.Unknown]: 'غير محدد',
 };
 
 /**
@@ -119,6 +127,7 @@ export const GovernorateEnglishNames: Record<Governorate, string> = {
   [Governorate.NorthSinai]: 'NorthSinai',
   [Governorate.SouthSinai]: 'SouthSinai',
   [Governorate.Foreign]: 'Foreign',
+  [Governorate.Unknown]: 'Unknown',
 };
 
 /**
@@ -132,6 +141,7 @@ export const RegionArabicNames: Record<Region, string> = {
   [Region.SinaiAndRedSea]: 'سيناء والبحر الأحمر',
   [Region.WesternDesert]: 'الصحراء الغربية',
   [Region.Foreign]: 'خارج الجمهورية',
+  [Region.Unknown]: 'غير محدد',
 };
 
 /**
@@ -145,6 +155,7 @@ export const RegionEnglishNames: Record<Region, string> = {
   [Region.SinaiAndRedSea]: 'SinaiAndRedSea',
   [Region.WesternDesert]: 'WesternDesert',
   [Region.Foreign]: 'Foreign',
+  [Region.Unknown]: 'Unknown',
 };
 
 /**
@@ -192,6 +203,9 @@ export const GovernorateToRegion: Record<Governorate, Region> = {
 
   // Foreign
   [Governorate.Foreign]: Region.Foreign,
+
+  // Unknown / unassigned codes (e.g. 05-10, 20)
+  [Governorate.Unknown]: Region.Unknown,
 };
 
 /**
